@@ -1,0 +1,14 @@
+{
+    "server": "",
+    "integration": [
+        {
+            "source-type": "tcp",
+            "description": "test that all events with the keyword google are going to kafka1",
+            "input": "",
+            "expected": "",
+            "destination": ""
+        }
+    ]
+
+    
+}

@@ -1,4 +1,4 @@
-package destinations
+package connections
 
 import (
 	"fmt"

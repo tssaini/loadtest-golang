@@ -2,25 +2,14 @@ package main
 
 import (
 	"log"
-
-	"github.com/tssaini/syslog-ng-config-testing/destinations"
 )
 
 func main() {
-	tcpConn, err := destinations.NewTCPConn("127.0.0.1", "601")
+	host := "127.0.0.1"
+	port := "601"
+	conns, err := createConns(host, port, "tcp", 10)
 	if err != nil {
-		log.Fatalf("Unable to create udp destiantion")
+		log.Fatalf("Unable to create connections")
 	}
-	defer tcpConn.Close()
-
-	// err = tcpDest.Send("Hello world!")
-	// err = tcpDest.Send("udp works!")
-	// err = tcpDest.Send("cool it works again and again")
-	// if err != nil {
-	// 	log.Fatalf("Unable to send to udp destnation")
-	// }
-	err = generate("Hello World!", 200, tcpConn)
-	if err != nil {
-		log.Fatalf("unable to generate logs %v", err)
-	}
+	generateLogs(conns, 20, "Hello google world!")
 }

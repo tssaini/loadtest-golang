@@ -6,25 +6,25 @@ import (
 	"sync"
 )
 
-// TCPDestination a tcp destination
-type TCPDestination struct {
+// TCPConn a tcp connection
+type TCPConn struct {
 	Host       string
 	Port       string
 	m          sync.Mutex
 	connection net.Conn
 }
 
-// NewTCPDestination initializes the tcp destination
-func NewTCPDestination(host, port string) (*TCPDestination, error) {
+// NewTCPConn initializes a tcp connection
+func NewTCPConn(host, port string) (*TCPConn, error) {
 	conn, err := net.Dial("tcp", fmt.Sprintf("%v:%v", host, port))
 	if err != nil {
 		return nil, err
 	}
-	return &TCPDestination{host, port, sync.Mutex{}, conn}, nil
+	return &TCPConn{host, port, sync.Mutex{}, conn}, nil
 }
 
 // Send to the tcp destination
-func (t *TCPDestination) Send(msg string) error {
+func (t *TCPConn) Send(msg string) error {
 	t.m.Lock()
 	_, err := fmt.Fprintf(t.connection, msg+"\n")
 	t.m.Unlock()
@@ -32,6 +32,6 @@ func (t *TCPDestination) Send(msg string) error {
 }
 
 // Close the tcp destination
-func (t *TCPDestination) Close() error {
+func (t *TCPConn) Close() error {
 	return t.connection.Close()
 }

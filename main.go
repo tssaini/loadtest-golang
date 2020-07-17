@@ -7,18 +7,19 @@ import (
 )
 
 func main() {
-	tcpDest, err := destinations.NewTCPDestination("127.0.0.1", "601")
+	tcpConn, err := destinations.NewTCPConn("127.0.0.1", "601")
 	if err != nil {
 		log.Fatalf("Unable to create udp destiantion")
 	}
-	defer tcpDest.Close()
+	defer tcpConn.Close()
+
 	// err = tcpDest.Send("Hello world!")
 	// err = tcpDest.Send("udp works!")
 	// err = tcpDest.Send("cool it works again and again")
 	// if err != nil {
 	// 	log.Fatalf("Unable to send to udp destnation")
 	// }
-	err = generate("Hello World!", 200, tcpDest)
+	err = generate("Hello World!", 200, tcpConn)
 	if err != nil {
 		log.Fatalf("unable to generate logs %v", err)
 	}

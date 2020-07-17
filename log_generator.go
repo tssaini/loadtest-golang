@@ -7,14 +7,14 @@ import (
 )
 
 // generate send logs to destination at specified eps
-func generate(log string, eps int, destination destinations.Destination) error {
+func generate(log string, eps int, conn destinations.RemoteConn) error {
 	var start time.Time
 	var timeElap time.Duration
 	var sleepTime time.Duration
 	for {
 		start = time.Now()
 		for i := 0; i < eps; i++ {
-			err := destination.Send(log)
+			err := conn.Send(log)
 			if err != nil {
 				return err
 			}

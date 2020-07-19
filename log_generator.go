@@ -7,7 +7,7 @@ import (
 	"github.com/tssaini/syslog-ng-config-testing/connections"
 )
 
-func createConns(host string, port string, connType string, activeConnections int) ([]connections.RemoteConn, error) {
+func CreateConns(host string, port string, connType string, activeConnections int) ([]connections.RemoteConn, error) {
 	var result []connections.RemoteConn
 	if connType == "udp" {
 		for i := 0; i < activeConnections; i++ {
@@ -31,24 +31,36 @@ func createConns(host string, port string, connType string, activeConnections in
 	return result, nil
 }
 
-func generateLogs(remoteConns []connections.RemoteConn, eps int, log string) {
-	wg := &sync.WaitGroup{}
+func GenerateRate(remoteConns []connections.RemoteConn, rate int, log string) {
+	wg := sync.WaitGroup{}
 	wg.Add(len(remoteConns))
 	for _, conn := range remoteConns {
-		go sendEPS(log, eps, conn, wg)
+		go sendEPS(log, rate, conn, &wg)
 	}
 	wg.Wait()
 }
 
+func GenerateN(log string, n int, remoteConns []connections.RemoteConn) error {
+	for _, conn := range remoteConns {
+		for i := 0; i < n; i++ {
+			err := conn.Send(log)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 // sendEPS send logs to destination at specified eps
-func sendEPS(log string, eps int, conn connections.RemoteConn, wg *sync.WaitGroup) error {
+func sendEPS(log string, rate int, conn connections.RemoteConn, wg *sync.WaitGroup) error {
 	defer wg.Done()
 	var start time.Time
 	var timeElap time.Duration
 	var sleepTime time.Duration
 	for {
 		start = time.Now()
-		for i := 0; i < eps; i++ {
+		for i := 0; i < rate; i++ {
 			err := conn.Send(log)
 			if err != nil {
 				return err

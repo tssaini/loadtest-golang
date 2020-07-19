@@ -1,14 +1,22 @@
 {
-    "server": "",
-    "integration": [
+    "integrationTests": [
         {
-            "source-type": "tcp",
-            "description": "test that all events with the keyword google are going to kafka1",
-            "input": "",
-            "expected": "",
-            "destination": ""
+            "host": "localhost", 
+            "sourceType": "tcp",
+            "port": 601,
+            "inputMessage": "hello world",
+            "expectedMessage": "hello world",
+            "destinationName": "d_local"
+        }
+    ],
+    "performanceTests": [
+        {
+            "host": "localhost",
+            "sourceType": "tcp",
+            "port": 514,
+            "rate": 2000,
+            "activeConnections": 10
         }
     ]
-
     
 }

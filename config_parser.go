@@ -5,11 +5,13 @@ import (
 	"io/ioutil"
 )
 
+// TestConfig represents the json config
 type TestConfig struct {
 	IntegrationTests []IntegrationTest
 	PerformanceTests []PerformanceTest
 }
 
+// IntegrationTest testcase info
 type IntegrationTest struct {
 	Host            string
 	SourceType      string
@@ -19,6 +21,7 @@ type IntegrationTest struct {
 	DestinationName string
 }
 
+// PerformanceTest testcase info
 type PerformanceTest struct {
 	Host              string
 	SourceType        string
@@ -27,6 +30,7 @@ type PerformanceTest struct {
 	ActiveConnections int
 }
 
+// ParseConfig parses the given json file path into the Testconfig
 func ParseConfig(fileName string) (*TestConfig, error) {
 	jsonData, err := ioutil.ReadFile(fileName)
 	if err != nil {

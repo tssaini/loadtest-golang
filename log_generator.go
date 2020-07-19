@@ -7,6 +7,7 @@ import (
 	"github.com/tssaini/syslog-ng-config-testing/connections"
 )
 
+// CreateConns creates remote connections
 func CreateConns(host string, port string, connType string, activeConnections int) ([]connections.RemoteConn, error) {
 	var result []connections.RemoteConn
 	if connType == "udp" {
@@ -31,7 +32,8 @@ func CreateConns(host string, port string, connType string, activeConnections in
 	return result, nil
 }
 
-func GenerateRate(remoteConns []connections.RemoteConn, rate int, log string) {
+// GenerateRate sends logs at rate to each connection
+func GenerateRate(log string, rate int, remoteConns []connections.RemoteConn) {
 	wg := sync.WaitGroup{}
 	wg.Add(len(remoteConns))
 	for _, conn := range remoteConns {
@@ -40,6 +42,7 @@ func GenerateRate(remoteConns []connections.RemoteConn, rate int, log string) {
 	wg.Wait()
 }
 
+// GenerateN sends n number of logs to each remoteConns
 func GenerateN(log string, n int, remoteConns []connections.RemoteConn) error {
 	for _, conn := range remoteConns {
 		for i := 0; i < n; i++ {

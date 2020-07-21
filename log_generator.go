@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -33,6 +34,7 @@ func CreateConns(host string, port string, connType string, activeConnections in
 }
 
 // GenerateRate sends logs at rate to each connection
+// TODO: pass the error upstream
 func GenerateRate(log string, rate int, remoteConns []connections.RemoteConn) {
 	wg := sync.WaitGroup{}
 	wg.Add(len(remoteConns))
@@ -56,6 +58,7 @@ func GenerateN(log string, n int, remoteConns []connections.RemoteConn) error {
 }
 
 // sendEPS send logs to destination at specified eps
+// TODO: pass the error upstream
 func sendEPS(log string, rate int, conn connections.RemoteConn, wg *sync.WaitGroup) error {
 	defer wg.Done()
 	var start time.Time
@@ -66,6 +69,7 @@ func sendEPS(log string, rate int, conn connections.RemoteConn, wg *sync.WaitGro
 		for i := 0; i < rate; i++ {
 			err := conn.Send(log)
 			if err != nil {
+				fmt.Println(err)
 				return err
 			}
 		}

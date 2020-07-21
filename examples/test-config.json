@@ -13,8 +13,8 @@
         {
             "host": "localhost",
             "sourceType": "tcp",
-            "port": 514,
-            "rate": 2000,
+            "port": 601,
+            "rate": 200,
             "activeConnections": 10
         }
     ]

@@ -18,16 +18,17 @@ func main() {
 	if err != nil {
 		log.Fatalf("unable to open file: %v", err)
 	}
-	wg := sync.WaitGroup{}
-	wg.Add(len(config.IntegrationTests))
-	for _, integrationTest := range config.IntegrationTests {
-		_, err := executeIntegrationTest(integrationTest, &wg)
-		if err != nil {
-			log.Fatalf("unable to execute testcase %v", err)
-		}
+	// wg := sync.WaitGroup{}
+	// wg.Add(len(config.IntegrationTests))
+	// for _, integrationTest := range config.IntegrationTests {
+	// 	_, err := executeIntegrationTest(integrationTest, &wg)
+	// 	if err != nil {
+	// 		log.Fatalf("unable to execute testcase %v", err)
+	// 	}
+	// }
+	// wg.Wait()
 
-	}
-	wg.Wait()
+	executePerformanceTest(config.PerformanceTests[0])
 }
 
 func executeIntegrationTest(config IntegrationTest, wg *sync.WaitGroup) (bool, error) {
@@ -41,4 +42,15 @@ func executeIntegrationTest(config IntegrationTest, wg *sync.WaitGroup) (bool, e
 		return false, err
 	}
 	return true, nil
+}
+
+func executePerformanceTest(config PerformanceTest) error {
+	conns, err := CreateConns(config.Host, fmt.Sprintf("%v", config.Port), config.SourceType, config.ActiveConnections)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	// TODO: make it concurrent and check for errors
+	GenerateRate("Hello world chrome!", config.Rate, conns)
+	return nil
 }

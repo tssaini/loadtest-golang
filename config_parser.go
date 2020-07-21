@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
+	"time"
 )
 
 // TestConfig represents the json config
@@ -28,6 +29,7 @@ type PerformanceTest struct {
 	Port              int
 	Rate              int
 	ActiveConnections int
+	Interval          time.Duration
 }
 
 // ParseConfig parses the given json file path into the Testconfig

@@ -18,7 +18,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("unable to open file: %v", err)
 	}
-	// wg := sync.WaitGroup{}
+	wg := sync.WaitGroup{}
 	// wg.Add(len(config.IntegrationTests))
 	// for _, integrationTest := range config.IntegrationTests {
 	// 	_, err := executeIntegrationTest(integrationTest, &wg)
@@ -27,8 +27,18 @@ func main() {
 	// 	}
 	// }
 	// wg.Wait()
+	wg.Add(1)
+	for _, perfTest := range config.PerformanceTests {
 
-	executePerformanceTest(config.PerformanceTests[0])
+		go func(test PerformanceTest) {
+			defer wg.Done()
+			err := executePerformanceTest(test)
+			if err != nil {
+				log.Fatalf("%v", err)
+			}
+		}(perfTest)
+	}
+	wg.Wait()
 }
 
 func executeIntegrationTest(config IntegrationTest, wg *sync.WaitGroup) (bool, error) {
@@ -47,10 +57,12 @@ func executeIntegrationTest(config IntegrationTest, wg *sync.WaitGroup) (bool, e
 func executePerformanceTest(config PerformanceTest) error {
 	conns, err := CreateConns(config.Host, fmt.Sprintf("%v", config.Port), config.SourceType, config.ActiveConnections)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
-	// TODO: make it concurrent and check for errors
-	GenerateRate("Hello world chrome!", config.Rate, conns)
+
+	err = GenerateRate("Hello world chrome!", config.Rate, config.Interval, conns)
+	if err != nil {
+		return err
+	}
 	return nil
 }

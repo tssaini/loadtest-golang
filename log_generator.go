@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"sync"
 	"time"
 
 	"github.com/tssaini/syslog-ng-config-testing/connections"
@@ -34,14 +32,31 @@ func CreateConns(host string, port string, connType string, activeConnections in
 }
 
 // GenerateRate sends logs at rate to each connection
-// TODO: pass the error upstream
-func GenerateRate(log string, rate int, remoteConns []connections.RemoteConn) {
-	wg := sync.WaitGroup{}
-	wg.Add(len(remoteConns))
+func GenerateRate(log string, rate int, interval time.Duration, remoteConns []connections.RemoteConn) error {
+	var doneChans []chan struct{}
+	errChan := make(chan error)
 	for _, conn := range remoteConns {
-		go sendEPS(log, rate, conn, &wg)
+		doneChan := make(chan struct{})
+		go func(conn connections.RemoteConn, doneChan <-chan struct{}) {
+			err := sendEPS(log, rate, conn, doneChan)
+			if err != nil {
+				errChan <- err
+			}
+		}(conn, doneChan)
 	}
-	wg.Wait()
+	select {
+	case err := <-errChan:
+		//TODO: close all the go routines launched above
+		for _, doneChan := range doneChans {
+			close(doneChan)
+		}
+		return err
+	case <-time.After(interval * time.Second): //TODO: change 100 to interval
+		for _, doneChan := range doneChans {
+			close(doneChan)
+		}
+		return nil
+	}
 }
 
 // GenerateN sends n number of logs to each remoteConns
@@ -58,18 +73,20 @@ func GenerateN(log string, n int, remoteConns []connections.RemoteConn) error {
 }
 
 // sendEPS send logs to destination at specified eps
-// TODO: pass the error upstream
-func sendEPS(log string, rate int, conn connections.RemoteConn, wg *sync.WaitGroup) error {
-	defer wg.Done()
+func sendEPS(log string, rate int, conn connections.RemoteConn, done <-chan struct{}) error {
 	var start time.Time
 	var timeElap time.Duration
 	var sleepTime time.Duration
 	for {
+		select {
+		case <-done:
+			return nil
+		default:
+		}
 		start = time.Now()
 		for i := 0; i < rate; i++ {
 			err := conn.Send(log)
 			if err != nil {
-				fmt.Println(err)
 				return err
 			}
 		}

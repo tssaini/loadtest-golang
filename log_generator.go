@@ -32,11 +32,12 @@ func CreateConns(host string, port string, connType string, activeConnections in
 }
 
 // GenerateRate sends logs at rate to each connection
-func GenerateRate(log string, rate int, interval time.Duration, remoteConns []connections.RemoteConn) error {
+func GenerateRate(log string, rate int, interval int32, remoteConns []connections.RemoteConn) error {
 	var doneChans []chan struct{}
 	errChan := make(chan error)
 	for _, conn := range remoteConns {
 		doneChan := make(chan struct{})
+		doneChans = append(doneChans, doneChan)
 		go func(conn connections.RemoteConn, doneChan <-chan struct{}) {
 			err := sendEPS(log, rate, conn, doneChan)
 			if err != nil {
@@ -46,12 +47,12 @@ func GenerateRate(log string, rate int, interval time.Duration, remoteConns []co
 	}
 	select {
 	case err := <-errChan:
-		//TODO: close all the go routines launched above
+		// close all the go routines launched above
 		for _, doneChan := range doneChans {
 			close(doneChan)
 		}
 		return err
-	case <-time.After(interval * time.Second): //TODO: change 100 to interval
+	case <-time.After(time.Duration(interval) * time.Second):
 		for _, doneChan := range doneChans {
 			close(doneChan)
 		}

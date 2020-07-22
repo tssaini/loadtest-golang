@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
-	"time"
 )
 
 // TestConfig represents the json config
@@ -29,7 +29,7 @@ type PerformanceTest struct {
 	Port              int
 	Rate              int
 	ActiveConnections int
-	Interval          time.Duration
+	Interval          int32
 }
 
 // ParseConfig parses the given json file path into the Testconfig
@@ -44,4 +44,12 @@ func ParseConfig(fileName string) (*TestConfig, error) {
 		return nil, err
 	}
 	return &config, nil
+}
+
+func (test PerformanceTest) String() string {
+	return fmt.Sprintf("%v %v:%v Rate: %v, ActiveConnections: %v, Interval: %v", test.SourceType, test.Host, test.Port, test.Rate, test.ActiveConnections, test.Interval)
+}
+
+func (test IntegrationTest) String() string {
+	return fmt.Sprintf("%v %v:%v", test.SourceType, test.Host, test.Port)
 }

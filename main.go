@@ -27,15 +27,17 @@ func main() {
 	// 	}
 	// }
 	// wg.Wait()
-	wg.Add(1)
+	wg.Add(len(config.PerformanceTests))
 	for _, perfTest := range config.PerformanceTests {
 
 		go func(test PerformanceTest) {
+			fmt.Printf("Starting test: %v\n", test)
 			defer wg.Done()
 			err := executePerformanceTest(test)
 			if err != nil {
 				log.Fatalf("%v", err)
 			}
+			fmt.Printf("Completed test: %v\n", test)
 		}(perfTest)
 	}
 	wg.Wait()

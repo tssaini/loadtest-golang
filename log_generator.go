@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/tssaini/syslog-ng-config-testing/connections"
@@ -26,7 +27,7 @@ func CreateConns(host string, port string, connType string, activeConnections in
 			result = append(result, conn)
 		}
 	} else {
-		panic("Incorrect connection type")
+		return nil, fmt.Errorf("Incorrect connection type: %v", connType)
 	}
 	return result, nil
 }

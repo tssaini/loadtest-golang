@@ -3,41 +3,54 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"sync"
+
+	"github.com/tssaini/syslog-ng-config-testing/util"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
-	// host := "127.0.0.1"
-	// port := "601"
-	// conns, err := createConns(host, port, "tcp", 10)
-	// if err != nil {
-	// 	log.Fatalf("Unable to create connections")
-	// }
-	// generateLogs(conns, 20, "Hello google world!")
-	config, err := ParseConfig("examples/test-config.json")
+	var filePath string
+
+	app := &cli.App{
+		Name:  "LoadTest",
+		Usage: "Used to to test log forwarders",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:        "config",
+				Aliases:     []string{"c"},
+				Value:       "config.json",
+				Destination: &filePath,
+				Usage:       "Load configuration from `FILE`",
+			},
+		},
+		Action: func(c *cli.Context) error {
+			executeTests(filePath)
+			return nil
+		},
+	}
+
+	app.Run(os.Args)
+}
+
+func executeTests(filename string) {
+	config, err := ParseConfig(filename)
 	if err != nil {
-		log.Fatalf("unable to open file: %v", err)
+		log.Fatalf("%v", err)
 	}
 	wg := sync.WaitGroup{}
-	// wg.Add(len(config.IntegrationTests))
-	// for _, integrationTest := range config.IntegrationTests {
-	// 	_, err := executeIntegrationTest(integrationTest, &wg)
-	// 	if err != nil {
-	// 		log.Fatalf("unable to execute testcase %v", err)
-	// 	}
-	// }
-	// wg.Wait()
 	wg.Add(len(config.PerformanceTests))
 	for _, perfTest := range config.PerformanceTests {
 
 		go func(test PerformanceTest) {
-			fmt.Printf("Starting test: %v\n", test)
+			util.InfoLogger.Printf("Starting test: %v\n", test)
 			defer wg.Done()
 			err := executePerformanceTest(test)
 			if err != nil {
 				log.Fatalf("%v", err)
 			}
-			fmt.Printf("Completed test: %v\n", test)
+			util.InfoLogger.Printf("Completed test: %v\n", test)
 		}(perfTest)
 	}
 	wg.Wait()

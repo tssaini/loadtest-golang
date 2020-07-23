@@ -1,14 +1,4 @@
 {
-    "integrationTests": [
-        {
-            "host": "localhost", 
-            "sourceType": "tcp",
-            "port": 601,
-            "inputMessage": "hello world",
-            "expectedMessage": "hello world",
-            "destinationName": "d_local"
-        }
-    ],
     "performanceTests": [
         {
             "host": "localhost",

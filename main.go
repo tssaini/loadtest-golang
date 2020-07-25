@@ -75,7 +75,7 @@ func executePerformanceTest(config PerformanceTest) error {
 		return err
 	}
 
-	err = GenerateRate("Hello world chrome!", config.Rate, config.Interval, conns)
+	err = GenerateRate("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua", config.Rate, config.Interval, conns)
 	if err != nil {
 		return err
 	}

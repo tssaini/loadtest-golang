@@ -6,7 +6,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/tssaini/syslog-ng-config-testing/util"
+	"github.com/tssaini/loadtest-golang/util"
 	"github.com/urfave/cli/v2"
 )
 
@@ -15,7 +15,7 @@ func main() {
 
 	app := &cli.App{
 		Name:  "LoadTest",
-		Usage: "Used to to test log forwarders",
+		Usage: "Used to to test tcp and udp applications",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:        "config",

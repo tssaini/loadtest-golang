@@ -1,4 +1,4 @@
-module github.com/tssaini/syslog-ng-config-testing
+module github.com/tssaini/loadtest-golang
 
 go 1.14
 

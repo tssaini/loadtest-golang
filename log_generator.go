@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tssaini/syslog-ng-config-testing/connections"
+	"github.com/tssaini/loadtest-golang/connections"
 )
 
 // CreateConns creates remote connections

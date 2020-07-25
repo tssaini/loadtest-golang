@@ -1,4 +1,4 @@
-# Syslog-ng Config Testing
+# Load Test Golang
 Used to load test TCP and UDP applications
 
 ## Usage
